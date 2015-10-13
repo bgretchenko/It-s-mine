@@ -31,7 +31,7 @@ start_link(Opts) ->
 	gen_server:start_link({local, ?MODULE}, ?MODULE, Opts, []).   
 
 stop({ok, Pid}) ->
-    Pid ! stop.
+    gen_server:cast(Pid, stop).
 
 insert(Key, Value) ->
 	gen_server:call(?MODULE, {insert, Key, Value}).
@@ -105,7 +105,7 @@ handle_call({insert, Key, Value}, _From, State) ->
 
 %% This call is asynchronous
 handle_cast(_Msg, State) ->
-	{noreply, State}.
+	{stop, normal, State}.
 %% This call is asynchronous
 handle_info(_Info, State) ->
 	{noreply, State}.
