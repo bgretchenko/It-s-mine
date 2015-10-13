@@ -30,7 +30,7 @@
 start_link(Opts) ->
 	gen_server:start_link({local, ?MODULE}, ?MODULE, Opts, []).   
 
-stop(Pid) ->
+stop({ok, Pid}) ->
     Pid ! stop.
 
 insert(Key, Value) ->
@@ -95,7 +95,7 @@ init(Opts) ->
 	timer:apply_interval(Sec*1000, ?MODULE, interval_delete, [Opts]),
 	{ok, #state{ttl = Sec}}.
 
-%sync
+%% Synchronous call
 handle_call({insert, Key, Value}, _From, State) ->
 	Sec = State#state.ttl,
 	Localtime = calendar:datetime_to_gregorian_seconds(erlang:localtime()),
@@ -103,10 +103,10 @@ handle_call({insert, Key, Value}, _From, State) ->
 	ets:insert(default, Data),
 	{reply, ok, State}.
 
-%async
+%% This call is asynchronous
 handle_cast(_Msg, State) ->
 	{noreply, State}.
-%async
+%% This call is asynchronous
 handle_info(_Info, State) ->
 	{noreply, State}.
 
