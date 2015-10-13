@@ -106,11 +106,13 @@ handle_call({insert, Key, Value}, _From, State) ->
 %% This call is asynchronous
 handle_cast(_Msg, State) ->
 	{stop, normal, State}.
+
 %% This call is asynchronous
 handle_info(_Info, State) ->
 	{noreply, State}.
 
 terminate(_Reason, _State) ->
+	ets:tab2file(default, default),
 	ok.
 
 code_change(_OldVsn, State, _Extra) ->
